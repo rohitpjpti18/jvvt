@@ -1,5 +1,9 @@
 package jvvt
 
+import (
+	"time"
+)
+
 // RegisteredClaims : These are claims that have specific meanings attached
 // to them
 type RegisteredClaims struct {
@@ -12,3 +16,11 @@ type RegisteredClaims struct {
 	JWTID      string `json:"jti,omitempty"`
 }
 
+func (rc *RegisteredClaims) Valid() error {
+	vErr := new(ValidationError)
+	now := time.Now().Unix()
+
+	if rc.VerifyExpiration(now) == false {
+		vErr.ErrorCode = 2;
+	}
+}
