@@ -1,2 +1,2 @@
 # jvvt
-library for implementating of json web tokens for authentication and authorization in golang
+library for implementation of json web tokens in go.
