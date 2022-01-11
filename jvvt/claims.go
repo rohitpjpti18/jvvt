@@ -1,5 +1,7 @@
 package jvvt
 
+import "time"
+
 type Claims struct {
 	Issuer       string                 `json:"iss,omitempty"`
 	Subject      string                 `json:"sub,omitempty"`
@@ -13,6 +15,11 @@ type Claims struct {
 
 func NewClaims() Claims {
 	return Claims{}
+}
+
+func (c *Claims) IsTokenExpried() bool {
+	exp := time.Unix(c.Expiration, 0)
+	return exp.Before(time.Now())
 }
 
 /*
