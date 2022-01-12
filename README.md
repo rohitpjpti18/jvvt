@@ -40,12 +40,12 @@ myclaims.Expiration = time.Now().AddDate(0,0,2).Unix()  // Expiration date of to
 token := jvvt.GenerateToken(claims)
 ```
 
-#### verifying the token signature
+#### verifying the token 
 ``` Go
-var isValid bool = jvvt.VerifySignature(token)
+isValid, err := jvvt.Verify(token)
 ```
 
-#### getting claims from the signature
+#### getting claims from the raw token
 ``` Go
 claims, err := jvvt.GetClaims(token)
 ```
