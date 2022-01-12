@@ -7,13 +7,13 @@ Import the jvvt package in your code
 JvvtObj acts as a container for handling jwt tokens
 
 #### Create a new JvvtObj
-```
+``` Go
     secretKey := "someLargeSeceretKey" // ! IMPORTANT keep this key secret , 
     jvvtObj := jvvt.NewJvvtObj(secretKey)
 ``` 
 
 claims is a struct type which acts as a payload for jwt token
-```
+``` Go
 type Claims struct {
 	Issuer       string                 `json:"iss,omitempty"`
 	Subject      string                 `json:"sub,omitempty"`
@@ -27,7 +27,7 @@ type Claims struct {
 ```
 
 #### creating a new claim object
-```
+``` Go
 myclaims := jvvt.NewClaims()
 myclaims.Issuer = "dumbledore"
 myclaims.Subject = "entry.to.hogwarts"
@@ -36,16 +36,16 @@ myclaims.Expiration = time.Now().AddDate(0,0,2).Unix()  // Expiration date of to
 ```
 
 #### generating a new token
-```
+``` Go
 token := jvvt.GenerateToken(claims)
 ```
 
 #### verifying the token signature
-```
+``` Go
 var isValid bool = jvvt.VerifySignature(token)
 ```
 
 #### getting claims from the signature
-```
+``` Go
 claims, err := jvvt.GetClaims(token)
 ```
