@@ -2,6 +2,7 @@ package jvvt
 
 import "time"
 
+// payload data for jwt token
 type Claims struct {
 	Issuer       string                 `json:"iss,omitempty"`
 	Subject      string                 `json:"sub,omitempty"`
@@ -13,10 +14,12 @@ type Claims struct {
 	JWTID        string                 `json:"jti,omitempty"`
 }
 
+// get new claims object
 func NewClaims() Claims {
 	return Claims{}
 }
 
+// check if token is expired or not
 func (c *Claims) IsTokenExpried() bool {
 	exp := time.Unix(c.Expiration, 0)
 	return exp.Before(time.Now())

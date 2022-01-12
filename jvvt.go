@@ -11,14 +11,13 @@ import (
 	"time"
 )
 
-// Claims : These are claims that have specific meanings attached
-// to them
-
+// jwt header
 type Header struct {
 	Algorithm string `json:"alg"`
 	Toketype  string `json:"typ"`
 }
 
+// jvvt container
 type JvvtObj struct {
 	signingHash hash.Hash
 	Head        Header
@@ -29,7 +28,7 @@ type JvvtObj struct {
 func Verify(rawToken string) bool {
 
 }*/
-
+// get new JvvtObj
 func NewJVVT(secret string) JvvtObj {
 	return JvvtObj{
 		signingHash: hmac.New(sha256.New, []byte(secret)),
@@ -40,6 +39,7 @@ func NewJVVT(secret string) JvvtObj {
 	}
 }
 
+// generate signature for base64(header) + "." + base64(payload)
 func (j *JvvtObj) signToken(tokenUnsigned string) []byte {
 	j.signingHash.Write([]byte(tokenUnsigned))
 	sha := j.signingHash.Sum(nil)
@@ -47,6 +47,7 @@ func (j *JvvtObj) signToken(tokenUnsigned string) []byte {
 	return sha
 }
 
+// generate new token
 func (j *JvvtObj) GenerateToken(claims Claims) (string, error) {
 	if claims.Expiration == 0 {
 		claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
@@ -71,6 +72,7 @@ func (j *JvvtObj) GenerateToken(claims Claims) (string, error) {
 	return headerBase64 + "." + payloadBase64 + "." + sign, nil
 }
 
+// get claims from raw token
 func (j *JvvtObj) GetClaims(token string) (Claims, error) {
 	tokenComps := strings.Split(token, ".")
 
@@ -97,6 +99,7 @@ func (j *JvvtObj) GetClaims(token string) (Claims, error) {
 	return claims, nil
 }
 
+// verify signature and expiration date of the token
 func (j *JvvtObj) Verify(token string) (bool, error) {
 	tokenComps := strings.Split(token, ".")
 
@@ -120,6 +123,7 @@ func (j *JvvtObj) Verify(token string) (bool, error) {
 	return true, nil
 }
 
+// verify signature of the token
 func (j *JvvtObj) VerifySignature(token string) bool {
 	splitedStr := strings.Split(token, ".")
 
@@ -139,11 +143,13 @@ func (j *JvvtObj) VerifySignature(token string) bool {
 	return hmac.Equal([]byte(b64Sign), []byte(sign))
 }
 
+// encode into url safe base64 string
 func encodeComponent(data []byte) string {
 	b64urlSafe := b64.RawURLEncoding.EncodeToString(data)
 	return b64urlSafe
 }
 
+// decode url safe base64 string to []byte array
 func decodeComponent(data string) []byte {
 	bytedata, _ := b64.RawURLEncoding.DecodeString(data)
 	return bytedata

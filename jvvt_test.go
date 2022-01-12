@@ -30,6 +30,7 @@ func TestDecodeComponent(t *testing.T) {
 	}
 }
 
+// test generation of token
 func TestGenerateToken(t *testing.T) {
 	jvvtTest := NewJVVT("somesecretkey")
 
@@ -111,5 +112,91 @@ func TestVerifySignature2(t *testing.T) {
 
 	if jvvtTest.VerifySignature(comps[0] + "." + comps[1] + "." + comps[2]) {
 		t.Errorf("signature not verified correctly")
+	}
+}
+
+// test with corrupt token
+func TestVerify1(t *testing.T) {
+	jvvtTest := NewJVVT("somesecretkey")
+
+	claims := NewClaims()
+	claims.IssuedAt = time.Now().Unix()
+	claims.Issuer = "rohit.prajapati"
+	claims.Subject = "user.login"
+	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
+
+	token, err := jvvtTest.GenerateToken(claims)
+
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
+
+	comps := strings.Split(token, ".")
+
+	comps[0] = "sadkjsdafklejdskfa239-0dfsa" // corrupt header
+
+	if val, err := jvvtTest.Verify(comps[0] + "." + comps[1] + "." + comps[2]); val || err != nil {
+		if err != nil {
+			t.Errorf("Error occured during verification: " + err.Error())
+		} else {
+			t.Errorf("signature not verified correctly")
+		}
+
+	}
+}
+
+// test for expired token
+func TestVerify2(t *testing.T) {
+	jvvtTest := NewJVVT("somesecretkey")
+
+	claims := NewClaims()
+	claims.IssuedAt = time.Now().Unix()
+	claims.Issuer = "rohit.prajapati"
+	claims.Subject = "user.login"
+	claims.Expiration = time.Now().Unix()
+
+	token, err := jvvtTest.GenerateToken(claims)
+
+	time.Sleep(100 * time.Millisecond)
+
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
+
+	if val, err := jvvtTest.Verify(token); val || err != nil {
+		if err != nil {
+			t.Errorf("Error occured during verification: " + err.Error())
+		} else {
+			t.Errorf("signature not verified correctly")
+		}
+
+	}
+}
+
+// test with valid token
+func TestVerify3(t *testing.T) {
+	jvvtTest := NewJVVT("somesecretkey")
+
+	claims := NewClaims()
+	claims.IssuedAt = time.Now().Unix()
+	claims.Issuer = "rohit.prajapati"
+	claims.Subject = "user.login"
+	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
+
+	token, err := jvvtTest.GenerateToken(claims)
+
+	time.Sleep(100 * time.Millisecond)
+
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
+
+	if val, err := jvvtTest.Verify(token); !val || err != nil {
+		if err != nil {
+			t.Errorf("Error occured during verification: " + err.Error())
+		} else {
+			t.Errorf("signature not verified correctly")
+		}
+
 	}
 }
