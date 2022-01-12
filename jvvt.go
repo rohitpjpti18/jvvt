@@ -8,6 +8,7 @@ import (
 	"errors"
 	"hash"
 	"strings"
+	"time"
 )
 
 // Claims : These are claims that have specific meanings attached
@@ -47,6 +48,9 @@ func (j *JvvtObj) signToken(tokenUnsigned string) []byte {
 }
 
 func (j *JvvtObj) GenerateToken(claims Claims) (string, error) {
+	if claims.Expiration == 0 {
+		claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
+	}
 	header, err := json.Marshal(j.Head)
 	if err != nil {
 		return "", err
