@@ -39,8 +39,11 @@ func TestGenerateToken(t *testing.T) {
 	claims.Subject = "user.login"
 	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
 
-	token := jvvtTest.GenerateToken(claims)
+	token, err := jvvtTest.GenerateToken(claims)
 
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
 	if !jvvtTest.VerifySignature(token) {
 		t.Errorf("token signature not valid")
 	}
@@ -76,8 +79,11 @@ func TestVerifySignature1(t *testing.T) {
 	claims.Subject = "user.login"
 	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
 
-	token := jvvtTest.GenerateToken(claims)
+	token, err := jvvtTest.GenerateToken(claims)
 
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
 	if !jvvtTest.VerifySignature(token) {
 		t.Errorf("token signature not valid")
 	}
@@ -93,7 +99,11 @@ func TestVerifySignature2(t *testing.T) {
 	claims.Subject = "user.login"
 	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix()
 
-	token := jvvtTest.GenerateToken(claims)
+	token, err := jvvtTest.GenerateToken(claims)
+
+	if err != nil {
+		t.Errorf("token generation failed: " + err.Error())
+	}
 
 	comps := strings.Split(token, ".")
 

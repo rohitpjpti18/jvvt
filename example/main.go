@@ -12,12 +12,20 @@ func main() {
 
 	claims := jvvt.NewClaims()
 
-	claims.Issuer = "test-app"
-	claims.Subject = "test-client"
+	claims.Issuer = "albus.dumbledore"
+	claims.Subject = "permit.hogsmade.visit"
 	claims.IssuedAt = time.Now().Unix()                    // get current unix time
 	claims.Expiration = time.Now().AddDate(0, 0, 2).Unix() // set expiration 48 hours from the time of issue
+	var otherdetails map[string]interface{} = make(map[string]interface{})
+	otherdetails["username"] = "harry.potter"
+	otherdetails["email"] = "harry.potter@hogwarts.com"
 
-	someToken := jvvtObj.GenerateToken(claims)
+	claims.OtherDetails = otherdetails
+
+	someToken, err := jvvtObj.GenerateToken(claims)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	fmt.Println(someToken)
 
 	fmt.Println(jvvtObj.VerifySignature(someToken))

@@ -6,7 +6,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"hash"
 	"strings"
 )
@@ -47,11 +46,14 @@ func (j *JvvtObj) signToken(tokenUnsigned string) []byte {
 	return sha
 }
 
-func (j *JvvtObj) GenerateToken(claims Claims) string {
-	header, err1 := json.Marshal(j.Head)
-	payload, err2 := json.Marshal(claims)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Error Marshalling the head or payload " + err1.Error() + err2.Error())
+func (j *JvvtObj) GenerateToken(claims Claims) (string, error) {
+	header, err := json.Marshal(j.Head)
+	if err != nil {
+		return "", err
+	}
+	payload, err := json.Marshal(claims)
+	if err != nil {
+		return "", err
 	}
 
 	headerBase64 := encodeComponent(header)
@@ -62,7 +64,7 @@ func (j *JvvtObj) GenerateToken(claims Claims) string {
 	sha := j.signToken(unSignedPart)
 	sign := encodeComponent([]byte(sha))
 
-	return headerBase64 + "." + payloadBase64 + "." + sign
+	return headerBase64 + "." + payloadBase64 + "." + sign, nil
 }
 
 func (j *JvvtObj) GetClaims(token string) (Claims, error) {
@@ -89,6 +91,29 @@ func (j *JvvtObj) GetClaims(token string) (Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func (j *JvvtObj) Verify(token string) (bool, error) {
+	tokenComps := strings.Split(token, ".")
+
+	if len(tokenComps) != 3 {
+		return false, errors.New("token should consist of three components: header.payload.signature")
+	}
+
+	if !j.VerifySignature(token) {
+		return false, nil
+	}
+
+	claims, err := j.GetClaims(token)
+
+	if err != nil {
+		return false, errors.New("error at GetClaims" + err.Error())
+	}
+	if claims.IsTokenExpried() {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func (j *JvvtObj) VerifySignature(token string) bool {
