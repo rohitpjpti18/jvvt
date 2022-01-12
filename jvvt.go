@@ -40,12 +40,6 @@ func NewJVVT(secret string) JvvtObj {
 	}
 }
 
-/*
-func getHS256Hash(secret string) hash.Hash {
-	return hmac.New(sha256.New, []byte(secret))
-}
-*/
-
 func (j *JvvtObj) signToken(tokenUnsigned string) []byte {
 	j.signingHash.Write([]byte(tokenUnsigned))
 	sha := j.signingHash.Sum(nil)
@@ -115,12 +109,6 @@ func (j *JvvtObj) VerifySignature(token string) bool {
 
 	return hmac.Equal([]byte(b64Sign), []byte(sign))
 }
-
-/*
-func GetPayload() Token {
-
-}
-*/
 
 func encodeComponent(data []byte) string {
 	b64urlSafe := b64.RawURLEncoding.EncodeToString(data)

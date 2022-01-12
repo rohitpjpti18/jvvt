@@ -1,4 +1,4 @@
-module jvvt-main
+module jvvt
 
 go 1.17
 
