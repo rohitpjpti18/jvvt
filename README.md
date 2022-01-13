@@ -45,7 +45,7 @@ token := jvvt.GenerateToken(claims)
 isValid, err := jvvt.Verify(token)
 ```
 
-#### getting claims from the raw token
+#### getting claims from the raw token (Reading the token information)
 ``` Go
 claims, err := jvvt.GetClaims(token)
 ```
